@@ -1,50 +1,70 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-// Obtener todas las parcelas para el select
 $parcelas = $conexion->query("SELECT id_parcela, nombre FROM Parcela");
+$error = "";
 
-if(isset($_POST['guardar'])){
-    $tipo = $_POST['tipo'];
-    $fecha = $_POST['fecha'];
-    $descripcion = $_POST['descripcion'];
-    $id_parcela = $_POST['id_parcela'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $tipo = trim($_POST['tipo'] ?? '');
+    $fecha = $_POST['fecha'] ?? '';
+    $descripcion = trim($_POST['descripcion'] ?? '');
+    $id_parcela = $_POST['id_parcela'] ?? '';
 
-    $sql = "INSERT INTO Actividad (tipo, fecha, descripcion, id_parcela) 
-            VALUES ('$tipo', '$fecha', '$descripcion', $id_parcela)";
-
-    if($conexion->query($sql) === TRUE){
-        header("Location: actividades.php");
+    if ($tipo === '' || $fecha === '' || $descripcion === '' || $id_parcela === '') {
+        $error = "Todos los campos son obligatorios.";
     } else {
-        echo "Error: " . $conexion->error;
+        $stmt = $conexion->prepare(
+            "INSERT INTO Actividad (tipo, fecha, descripcion, id_parcela) 
+             VALUES (?, ?, ?, ?)"
+        );
+        $stmt->bind_param("sssi", $tipo, $fecha, $descripcion, $id_parcela);
+
+        if ($stmt->execute()) {
+            header("Location: actividades.php");
+            exit();
+        } else {
+            $error = "Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Actividad</title>
-</head>
-<body>
-    <h1>Agregar Actividad</h1>
+<div class="form-box">
+    <h2>Agregar Actividad</h2>
+
+    <?php if ($error): ?>
+        <div class="alert error"><?= htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+
     <form method="POST">
-        Tipo: <input type="text" name="tipo" required><br><br>
-        Fecha: <input type="date" name="fecha" required><br><br>
-        Descripción: <textarea name="descripcion" required></textarea><br><br>
-        Parcela: 
+
+        <label>Tipo de Actividad</label>
+        <input type="text" name="tipo" placeholder="Ej. Riego, Fertilización" required>
+
+        <label>Fecha</label>
+        <input type="date" name="fecha" required>
+
+        <label>Descripción</label>
+        <textarea name="descripcion" style="height: 120px;" required></textarea>
+
+        <label>Parcela</label>
         <select name="id_parcela" required>
             <option value="">Selecciona una parcela</option>
-            <?php
-            while($fila = $parcelas->fetch_assoc()){
-                echo "<option value='".$fila['id_parcela']."'>".$fila['nombre']."</option>";
-            }
-            ?>
-        </select><br><br>
-        <input type="submit" name="guardar" value="Guardar Actividad">
+            <?php while ($p = $parcelas->fetch_assoc()): ?>
+                <option value="<?= $p['id_parcela']; ?>">
+                    <?= htmlspecialchars($p['nombre']); ?>
+                </option>
+            <?php endwhile; ?>
+        </select>
+
+        <div class="form-actions">
+            <button class="btn guardar" type="submit">Guardar</button>
+            <a class="btn cancelar" href="actividades.php">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="actividades.php">Volver a Actividades</a>
-</body>
-</html>
+</div>
+
+</main></body></html>

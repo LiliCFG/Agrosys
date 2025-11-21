@@ -1,54 +1,36 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-// Consulta para obtener todas las actividades junto con el nombre de la parcela
 $sql = "SELECT a.id_actividad, a.tipo, a.fecha, a.descripcion, p.nombre AS parcela 
         FROM Actividad a
-        INNER JOIN Parcela p ON a.id_parcela = p.id_parcela";
-$resultado = $conexion->query($sql);
+        LEFT JOIN Parcela p ON a.id_parcela = p.id_parcela
+        ORDER BY a.fecha DESC";
+$res = $conexion->query($sql);
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Actividades - Agrosys</title>
-</head>
-<body>
-    <h1>Lista de Actividades</h1>
-
-    <table border="1" cellpadding="10">
-        <tr>
-            <th>ID</th>
-            <th>Tipo</th>
-            <th>Fecha</th>
-            <th>Descripción</th>
-            <th>Parcela</th>
-            <th>Acciones</th>
-        </tr>
-
-        <?php
-        if ($resultado->num_rows > 0) {
-            while($fila = $resultado->fetch_assoc()) {
-                echo "<tr>
-                        <td>".$fila['id_actividad']."</td>
-                        <td>".$fila['tipo']."</td>
-                        <td>".$fila['fecha']."</td>
-                        <td>".$fila['descripcion']."</td>
-                        <td>".$fila['parcela']."</td>
-                        <td>
-                            <a href='editar_actividad.php?id=".$fila['id_actividad']."'>Editar</a> |
-                            <a href='eliminar_actividad.php?id=".$fila['id_actividad']."'>Eliminar</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='6'>No hay actividades</td></tr>";
-        }
-        ?>
+<div class="contenedor">
+    <h1>Actividades</h1>
+    <table>
+        <tr><th>ID</th><th>Tipo</th><th>Fecha</th><th>Descripción</th><th>Parcela</th><th>Acciones</th></tr>
+        <?php if($res && $res->num_rows>0): while($f=$res->fetch_assoc()): ?>
+            <tr>
+                <td><?= htmlspecialchars($f['id_actividad']); ?></td>
+                <td><?= htmlspecialchars($f['tipo']); ?></td>
+                <td><?= htmlspecialchars($f['fecha']); ?></td>
+                <td><?= htmlspecialchars($f['descripcion']); ?></td>
+                <td><?= htmlspecialchars($f['parcela']); ?></td>
+                <td>
+                    <a class="btn editar" href="editar_actividad.php?id=<?= $f['id_actividad']; ?>">Editar</a>
+                    <a class="btn eliminar" href="eliminar_actividad.php?id=<?= $f['id_actividad']; ?>" onclick="return confirm('¿Eliminar actividad?')">Eliminar</a>
+                </td>
+            </tr>
+        <?php endwhile; else: ?>
+            <tr><td colspan="6">No hay actividades registradas.</td></tr>
+        <?php endif;?>
     </table>
 
-    <br>
-    <a href="agregar_actividad.php">Agregar Nueva Actividad</a>
-</body>
-</html>
+    <a class="btn guardar" href="agregar_actividad.php">+ Agregar Actividad</a>
+    <a class="btn cancelar" href="index.php" style="margin-left:10px;">← Volver</a>
+</div>
+</main></body></html>

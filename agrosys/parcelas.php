@@ -1,52 +1,51 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-// Consulta para obtener todas las parcelas
-$sql = "SELECT * FROM Parcela";
-$resultado = $conexion->query($sql);
+// Consulta actualizada incluyendo la comunidad
+$sql = "SELECT id_parcela, nombre, ubicacion, extension, tipo_suelo, comunidad 
+        FROM Parcela";
+$res = $conexion->query($sql);
 ?>
+<div class="contenedor">
+    <h1>Parcelas</h1>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Parcelas - Agrosys</title>
-</head>
-<body>
-    <h1>Lista de Parcelas</h1>
-
-    <table border="1" cellpadding="10">
+    <table>
         <tr>
             <th>ID</th>
             <th>Nombre</th>
             <th>Ubicación</th>
             <th>Extensión</th>
-            <th>Tipo de Suelo</th>
+            <th>Tipo Suelo</th>
+            <th>Comunidad</th>
             <th>Acciones</th>
         </tr>
 
-        <?php
-        if ($resultado->num_rows > 0) {
-            while($fila = $resultado->fetch_assoc()) {
-                echo "<tr>
-                        <td>".$fila['id_parcela']."</td>
-                        <td>".$fila['nombre']."</td>
-                        <td>".$fila['ubicación']."</td>
-                        <td>".$fila['extensión']."</td>
-                        <td>".$fila['tipo_suelo']."</td>
-                        <td>
-                            <a href='editar_parcela.php?id=".$fila['id_parcela']."'>Editar</a> |
-                            <a href='eliminar_parcela.php?id=".$fila['id_parcela']."'>Eliminar</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='6'>No hay parcelas</td></tr>";
-        }
-        ?>
+        <?php if ($res && $res->num_rows > 0): ?>
+            <?php while ($f = $res->fetch_assoc()): ?>
+                <tr>
+                    <td><?= htmlspecialchars($f['id_parcela']); ?></td>
+                    <td><?= htmlspecialchars($f['nombre']); ?></td>
+                    <td><?= htmlspecialchars($f['ubicacion']); ?></td>
+                    <td><?= htmlspecialchars($f['extension']); ?></td>
+                    <td><?= htmlspecialchars($f['tipo_suelo']); ?></td>
+                    <td><?= htmlspecialchars($f['comunidad']); ?></td>
+
+                    <td>
+                        <a class="btn editar" href="editar_parcela.php?id=<?= $f['id_parcela']; ?>">Editar</a>
+                        <a class="btn eliminar" href="eliminar_parcela.php?id=<?= $f['id_parcela']; ?>"
+                           onclick="return confirm('¿Eliminar parcela?')">Eliminar</a>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+        <?php else: ?>
+            <tr><td colspan="7">No hay parcelas registradas.</td></tr>
+        <?php endif; ?>
     </table>
 
-    <br>
-    <a href="agregar_parcela.php">Agregar Nueva Parcela</a>
-</body>
-</html>
+    <a class="btn guardar" href="agregar_parcela.php">+ Agregar Parcela</a>
+    <a class="btn cancelar" href="index.php" style="margin-left:10px;">← Volver</a>
+</div>
+
+</main></body></html>

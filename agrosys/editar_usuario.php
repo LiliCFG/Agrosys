@@ -1,56 +1,108 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-if(isset($_GET['id'])){
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM Usuario WHERE id_usuario = $id";
-    $resultado = $conexion->query($sql);
-    $usuario = $resultado->fetch_assoc();
+$usuario = null;
+
+// Obtener usuario
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $stmt = $conexion->prepare(
+        "SELECT id_usuario, nombre, correo, password, tipo_usuario 
+         FROM Usuario WHERE id_usuario = ?"
+    );
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $usuario = $res->fetch_assoc();
+    $stmt->close();
 }
 
-if(isset($_POST['actualizar'])){
-    $id = $_POST['id'];
-    $nombre = $_POST['nombre'];
-    $correo = $_POST['correo'];
-    $clave = $_POST['clave'];
+$error = "";
+
+// Procesar actualización
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = (int)$_POST['id'];
+    $nombre = trim($_POST['nombre']);
+    $correo = trim($_POST['correo']);
+    $clave = trim($_POST['clave']);
     $tipo = $_POST['tipo_usuario'];
 
-    $sql = "UPDATE Usuario SET 
-                nombre='$nombre', 
-                correo='$correo', 
-                contraseña='$clave', 
-                tipo_usuario='$tipo' 
-            WHERE id_usuario=$id";
-
-    if($conexion->query($sql) === TRUE){
-        header("Location: usuarios.php");
+    if ($nombre === '' || $correo === '') {
+        $error = "Nombre y correo son obligatorios.";
     } else {
-        echo "Error: " . $conexion->error;
+        // Si escriben una clave nueva → se hashea
+        if ($clave !== '') {
+            $hash = password_hash($clave, PASSWORD_DEFAULT);
+        } else {
+            // Se mantiene la actual
+            $stmt = $conexion->prepare("SELECT password FROM Usuario WHERE id_usuario = ?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            $hash = $result['password'];
+            $stmt->close();
+        }
+
+        $stmt = $conexion->prepare(
+            "UPDATE Usuario 
+             SET nombre=?, correo=?, password=?, tipo_usuario=? 
+             WHERE id_usuario=?"
+        );
+        $stmt->bind_param("ssssi", $nombre, $correo, $hash, $tipo, $id);
+
+        if ($stmt->execute()) {
+            header("Location: usuarios.php");
+            exit();
+        } else {
+            $error = "Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Usuario</title>
-</head>
-<body>
-    <h1>Editar Usuario</h1>
+<div class="form-box">
+    <h2>Editar Usuario</h2>
+
+    <?php if ($error): ?>
+        <div class="alert error"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
+    <?php if (!$usuario): ?>
+        <p>Usuario no encontrado.</p>
+        <a href="usuarios.php" class="btn cancelar">← Regresar</a>
+
+    <?php else: ?>
     <form method="POST">
-        <input type="hidden" name="id" value="<?php echo $usuario['id_usuario']; ?>">
-        Nombre: <input type="text" name="nombre" value="<?php echo $usuario['nombre']; ?>" required><br><br>
-        Correo: <input type="email" name="correo" value="<?php echo $usuario['correo']; ?>" required><br><br>
-        Contraseña: <input type="text" name="clave" value="<?php echo $usuario['contraseña']; ?>" required><br><br>
-        Tipo de Usuario: 
+        <input type="hidden" name="id" value="<?= htmlspecialchars($usuario['id_usuario']) ?>">
+
+        <label>Nombre</label>
+        <input type="text" name="nombre" value="<?= htmlspecialchars($usuario['nombre']) ?>" required>
+
+        <label>Correo</label>
+        <input type="email" name="correo" value="<?= htmlspecialchars($usuario['correo']) ?>" required>
+
+        <label>Nueva contraseña (opcional)</label>
+        <input type="password" name="clave" placeholder="Dejar vacío para conservar">
+
+        <label>Tipo de usuario</label>
         <select name="tipo_usuario">
-            <option value="admin" <?php if($usuario['tipo_usuario']=="admin") echo "selected"; ?>>Admin</option>
-            <option value="usuario" <?php if($usuario['tipo_usuario']=="usuario") echo "selected"; ?>>Usuario</option>
-        </select><br><br>
-        <input type="submit" name="actualizar" value="Actualizar Usuario">
+            <option value="admin" <?= $usuario['tipo_usuario'] == 'admin' ? 'selected' : '' ?>>
+                Administrador
+            </option>
+            <option value="usuario" <?= $usuario['tipo_usuario'] == 'usuario' ? 'selected' : '' ?>>
+                Usuario
+            </option>
+        </select>
+
+        <div class="form-actions">
+            <button class="btn guardar" type="submit">Actualizar</button>
+            <a href="usuarios.php" class="btn cancelar">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="usuarios.php">Volver a Usuarios</a>
-</body>
-</html>
+    <?php endif; ?>
+</div>
+
+</main></body></html>

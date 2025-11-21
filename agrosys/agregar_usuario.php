@@ -1,43 +1,75 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-if(isset($_POST['guardar'])){
-    $nombre = $_POST['nombre'];
-    $correo = $_POST['correo'];
-    $clave = $_POST['clave'];
-    $tipo = $_POST['tipo_usuario'];
+// Mensaje de error
+$error = "";
 
-    $sql = "INSERT INTO Usuario (nombre, correo, contraseña, tipo_usuario) 
-            VALUES ('$nombre', '$correo', '$clave', '$tipo')";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    if($conexion->query($sql) === TRUE){
-        header("Location: usuarios.php");
+    $nombre = trim($_POST['nombre'] ?? '');
+    $correo = trim($_POST['correo'] ?? '');
+    $clave = trim($_POST['clave'] ?? '');
+    $tipo = $_POST['tipo_usuario'] ?? 'usuario';
+
+    if ($nombre === '' || $correo === '' || $clave === '') {
+        $error = "Todos los campos son obligatorios.";
     } else {
-        echo "Error: " . $sql . "<br>" . $conexion->error;
+
+        // Encriptar contraseña
+        $hash = password_hash($clave, PASSWORD_DEFAULT);
+
+        // Guardar en BD
+        $stmt = $conexion->prepare(
+            "INSERT INTO Usuario (nombre, correo, password, tipo_usuario)
+             VALUES (?, ?, ?, ?)"
+        );
+        $stmt->bind_param("ssss", $nombre, $correo, $hash, $tipo);
+
+        if ($stmt->execute()) {
+            header("Location: usuarios.php");
+            exit();
+        } else {
+            $error = "Error al guardar: " . $stmt->error;
+        }
+
+        $stmt->close();
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Usuario</title>
-</head>
-<body>
-    <h1>Agregar Usuario</h1>
+<link rel="stylesheet" href="css/usuarios.css">
+
+<div class="form-box">
+    <h2>Agregar Usuario</h2>
+
+    <?php if ($error): ?>
+        <div class="alert error"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
+
     <form method="POST">
-        Nombre: <input type="text" name="nombre" required><br><br>
-        Correo: <input type="email" name="correo" required><br><br>
-        Contraseña: <input type="password" name="clave" required><br><br>
-        Tipo de Usuario: 
+
+        <label>Nombre</label>
+        <input type="text" name="nombre" required>
+
+        <label>Correo</label>
+        <input type="email" name="correo" required>
+
+        <label>Contraseña</label>
+        <input type="password" name="clave" required>
+
+        <label>Tipo de usuario</label>
         <select name="tipo_usuario">
-            <option value="admin">Admin</option>
-            <option value="usuario">Usuario</option>
-        </select><br><br>
-        <input type="submit" name="guardar" value="Guardar Usuario">
+            <option value="admin">Administrador</option>
+            <option value="usuario" selected>Usuario</option>
+        </select>
+
+        <div class="form-actions">
+            <button class="btn guardar" type="submit">Guardar</button>
+            <a href="usuarios.php" class="btn cancelar">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="usuarios.php">Volver a Usuarios</a>
-</body>
-</html>
+</div>
+
+</main></body></html>

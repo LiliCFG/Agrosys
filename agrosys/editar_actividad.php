@@ -1,65 +1,100 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-// Obtener todas las parcelas para el select
+// Obtener lista de parcelas
 $parcelas = $conexion->query("SELECT id_parcela, nombre FROM Parcela");
 
-// Obtener datos de la actividad a editar
-if(isset($_GET['id'])){
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM Actividad WHERE id_actividad = $id";
-    $resultado = $conexion->query($sql);
-    $actividad = $resultado->fetch_assoc();
+// Valores por defecto
+$actividad = [
+    'id_actividad' => '',
+    'tipo' => '',
+    'fecha' => '',
+    'descripcion' => '',
+    'id_parcela' => ''
+];
+
+// Si viene ID → cargar datos
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    $stmt = $conexion->prepare("
+        SELECT id_actividad, tipo, fecha, descripcion, id_parcela 
+        FROM Actividad WHERE id_actividad = ?
+    ");
+    $stmt->bind_param("i",$id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $actividad = $res->fetch_assoc();
+    $stmt->close();
 }
 
-// Actualizar actividad
-if(isset($_POST['actualizar'])){
-    $id = $_POST['id'];
-    $tipo = $_POST['tipo'];
+$error = "";
+
+// Si se envió formulario
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = (int)$_POST['id'];
+    $tipo = trim($_POST['tipo']);
     $fecha = $_POST['fecha'];
-    $descripcion = $_POST['descripcion'];
-    $id_parcela = $_POST['id_parcela'];
+    $descripcion = trim($_POST['descripcion']);
+    $id_parcela = (int)$_POST['id_parcela'];
 
-    $sql = "UPDATE Actividad SET 
-                tipo='$tipo', 
-                fecha='$fecha', 
-                descripcion='$descripcion', 
-                id_parcela=$id_parcela 
-            WHERE id_actividad=$id";
+    $stmt = $conexion->prepare("
+        UPDATE Actividad 
+        SET tipo=?, fecha=?, descripcion=?, id_parcela=? 
+        WHERE id_actividad=?
+    ");
 
-    if($conexion->query($sql) === TRUE){
+    $stmt->bind_param("sssii",$tipo,$fecha,$descripcion,$id_parcela,$id);
+
+    if ($stmt->execute()) {
         header("Location: actividades.php");
+        exit();
     } else {
-        echo "Error: " . $conexion->error;
+        $error = "Error: " . $stmt->error;
     }
+
+    $stmt->close();
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Actividad</title>
-</head>
-<body>
-    <h1>Editar Actividad</h1>
+<div class="form-box">
+    <h2>Editar Actividad</h2>
+
+    <?php if (!empty($error)): ?>
+        <div class="alert error"><?= htmlspecialchars($error); ?></div>
+    <?php endif; ?>
+
     <form method="POST">
-        <input type="hidden" name="id" value="<?php echo $actividad['id_actividad']; ?>">
-        Tipo: <input type="text" name="tipo" value="<?php echo $actividad['tipo']; ?>" required><br><br>
-        Fecha: <input type="date" name="fecha" value="<?php echo $actividad['fecha']; ?>" required><br><br>
-        Descripción: <textarea name="descripcion" required><?php echo $actividad['descripcion']; ?></textarea><br><br>
-        Parcela: 
+        <input type="hidden" name="id" value="<?= htmlspecialchars($actividad['id_actividad']); ?>">
+
+        <label>Tipo de actividad</label>
+        <input type="text" name="tipo" value="<?= htmlspecialchars($actividad['tipo']); ?>" required>
+
+        <label>Fecha</label>
+        <input type="date" name="fecha" value="<?= htmlspecialchars($actividad['fecha']); ?>" required>
+
+        <label>Descripción</label>
+        <textarea name="descripcion" required><?= htmlspecialchars($actividad['descripcion']); ?></textarea>
+
+        <label>Parcela asociada</label>
         <select name="id_parcela" required>
-            <?php
-            while($fila = $parcelas->fetch_assoc()){
-                $selected = ($fila['id_parcela'] == $actividad['id_parcela']) ? "selected" : "";
-                echo "<option value='".$fila['id_parcela']."' $selected>".$fila['nombre']."</option>";
-            }
+            <?php 
+            $parcelas = $conexion->query("SELECT id_parcela, nombre FROM Parcela");
+            while ($p = $parcelas->fetch_assoc()):
+                $sel = ($p['id_parcela'] == $actividad['id_parcela']) ? "selected" : "";
             ?>
-        </select><br><br>
-        <input type="submit" name="actualizar" value="Actualizar Actividad">
+            <option value="<?= $p['id_parcela']; ?>" <?= $sel; ?>>
+                <?= htmlspecialchars($p['nombre']); ?>
+            </option>
+            <?php endwhile; ?>
+        </select>
+
+        <div class="form-actions">
+            <button class="btn guardar" type="submit">Actualizar</button>
+            <a class="btn cancelar" href="actividades.php">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="actividades.php">Volver a Actividades</a>
-</body>
-</html>
+</div>
+
+</main></body></html>

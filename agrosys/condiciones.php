@@ -1,54 +1,56 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-// Consulta para obtener todas las condiciones junto con el nombre de la parcela
-$sql = "SELECT c.id_condicion, c.fecha, c.humedad, c.temperatura, p.nombre AS parcela 
+// Consulta incluyendo la comunidad
+$sql = "SELECT c.id_condicion, c.fecha, c.humedad, c.temperatura, 
+               p.nombre AS parcela, p.comunidad
         FROM CondicionCultivo c
-        INNER JOIN Parcela p ON c.id_parcela = p.id_parcela";
-$resultado = $conexion->query($sql);
+        LEFT JOIN Parcela p ON c.id_parcela = p.id_parcela
+        ORDER BY c.fecha ASC";
+$res = $conexion->query($sql);
 ?>
+<div class="contenedor">
+    <h1>Condiciones de Cultivo</h1>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Condiciones de Cultivo - Agrosys</title>
-</head>
-<body>
-    <h1>Lista de Condiciones de Cultivo</h1>
+    <!-- BOTONES DE GRÁFICAS -->
+    <div style="margin-bottom:25px; display:flex; justify-content:center; gap:15px;">
+        <a class="btn guardar" href="graficas_sanrafael.php">📊 Gráfica San Rafael</a>
+        <a class="btn guardar" href="graficas_sanjuan.php">📈 Gráfica San Juan Ahuehueyo</a>
+    </div>
 
-    <table border="1" cellpadding="10">
+
+    <!-- TABLA -->
+    <table>
         <tr>
-            <th>ID</th>
-            <th>Fecha</th>
-            <th>Humedad</th>
-            <th>Temperatura</th>
-            <th>Parcela</th>
-            <th>Acciones</th>
+            <th>ID</th><th>Fecha</th><th>Humedad</th>
+            <th>Temperatura</th><th>Parcela</th>
+            <th>Comunidad</th><th>Acciones</th>
         </tr>
+        <?php 
+        if($res && $res->num_rows>0): 
+            while($f=$res->fetch_assoc()): ?>
+            <tr>
+                <td><?= htmlspecialchars($f['id_condicion']); ?></td>
+                <td><?= htmlspecialchars($f['fecha']); ?></td>
+                <td><?= htmlspecialchars($f['humedad']); ?></td>
+                <td><?= htmlspecialchars($f['temperatura']); ?></td>
+                <td><?= htmlspecialchars($f['parcela']); ?></td>
+                <td><?= htmlspecialchars($f['comunidad']); ?></td>
 
-        <?php
-        if ($resultado->num_rows > 0) {
-            while($fila = $resultado->fetch_assoc()) {
-                echo "<tr>
-                        <td>".$fila['id_condicion']."</td>
-                        <td>".$fila['fecha']."</td>
-                        <td>".$fila['humedad']."</td>
-                        <td>".$fila['temperatura']."</td>
-                        <td>".$fila['parcela']."</td>
-                        <td>
-                            <a href='editar_condicion.php?id=".$fila['id_condicion']."'>Editar</a> |
-                            <a href='eliminar_condicion.php?id=".$fila['id_condicion']."'>Eliminar</a>
-                        </td>
-                      </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='6'>No hay condiciones registradas</td></tr>";
-        }
-        ?>
+                <td>
+                    <a class="btn editar" href="editar_condicion.php?id=<?= $f['id_condicion']; ?>">Editar</a>
+                    <a class="btn eliminar" href="eliminar_condicion.php?id=<?= $f['id_condicion']; ?>" onclick="return confirm('¿Eliminar condición?')">Eliminar</a>
+                </td>
+            </tr>
+        <?php endwhile; else: ?>
+            <tr><td colspan="7">No hay condiciones registrados.</td></tr>
+        <?php endif;?>
     </table>
 
-    <br>
-    <a href="agregar_condicion.php">Agregar Nueva Condición</a>
-</body>
-</html>
+    <a class="btn guardar" href="agregar_condicion.php">+ Agregar Condición</a>
+    <a class="btn cancelar" href="index.php" style="margin-left:10px;">← Volver</a>
+</div>
+
+</main></body></html>

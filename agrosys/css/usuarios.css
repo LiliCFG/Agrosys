@@ -1,0 +1,85 @@
+/* --- ESTILOS ESPECÍFICOS PARA FORMULARIOS DE USUARIOS --- */
+.usuario-card {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 700px;
+    margin: auto;
+}
+
+.usuario-titulo {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+    color: #2e7d32;
+    font-weight: 700;
+}
+
+.usuario-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.usuario-form label {
+    font-weight: 600;
+    color: #333;
+}
+
+.usuario-form input,
+.usuario-form select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+.usuario-alert {
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.usuario-alert.error {
+    background: #ffebee;
+    color: #c62828;
+    border-left: 5px solid #c62828;
+}
+
+.usuario-btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.btn-usuario {
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+}
+
+.btn-guardar-usuario {
+    background: #2e7d32;
+    color: white;
+}
+.btn-guardar-usuario:hover {
+    background: #256628;
+}
+
+.btn-cancelar-usuario {
+    background: #bdbdbd;
+    color: black;
+}
+.btn-cancelar-usuario:hover {
+    background: #9e9e9e;
+}
