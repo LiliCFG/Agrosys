@@ -1,50 +1,65 @@
 <?php
-include "conexion.php";
+// index.php — Panel principal de Agrosys
+session_start();
+// Si no hay sesión activa, redirigir (opcional)
+// if(!isset($_SESSION['id_usuario'])){ header("Location: login.php"); exit(); }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Agrosys</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background: #f4f4f4; }
-        h1 { color: #2c3e50; }
-        .menu { display: flex; flex-wrap: wrap; gap: 20px; }
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 2px 5px rgba(0,0,0,0.2);
-            flex: 1 1 200px;
-            text-align: center;
-        }
-        .card a { text-decoration: none; color: #2980b9; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8">
+  <title>Agrosys | Panel Principal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
 </head>
+
 <body>
-    <h1>Agrosys</h1>
-    <div class="menu">
-        <div class="card">
-            <h2>Usuarios</h2>
-            <p>Gestiona todos los usuarios</p>
-            <a href="usuarios.php">Ir a Usuarios</a>
-        </div>
-        <div class="card">
-            <h2>Parcelas</h2>
-            <p>Gestiona todas las parcelas</p>
-            <a href="parcelas.php">Ir a Parcelas</a>
-        </div>
-        <div class="card">
-            <h2>Actividades</h2>
-            <p>Gestiona todas las actividades</p>
-            <a href="actividades.php">Ir a Actividades</a>
-        </div>
-        <div class="card">
-            <h2>Condiciones de Cultivo</h2>
-            <p>Registra humedad y temperatura</p>
-            <a href="condiciones.php">Ir a Condiciones</a>
-        </div>
+
+  <!-- Barra superior -->
+  <header class="topbar">
+    <div class="logo">
+        <img src="img/logo.png" alt="Logo Agrosys" class="logo-header">
+        <span>AGROSYS</span>
     </div>
+
+    <div class="user-box">
+      <span>👤 Administrador</span>
+      <a href="login.php" class="btn-logout">Cerrar sesión</a>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="menu-grid">
+
+    <div class="card">
+      <div class="icono">👤</div>
+      <h2>Usuarios</h2>
+      <p>Gestiona todos los usuarios del sistema.</p>
+      <a href="usuarios.php" class="btn">Entrar</a>
+    </div>
+
+    <div class="card">
+      <div class="icono">🌾</div>
+      <h2>Parcelas</h2>
+      <p>Administra todas las parcelas registradas.</p>
+      <a href="parcelas.php" class="btn">Entrar</a>
+    </div>
+
+    <div class="card">
+      <div class="icono">🧺</div>
+      <h2>Actividades</h2>
+      <p>Organiza las actividades agrícolas de tus cultivos.</p>
+      <a href="actividades.php" class="btn">Entrar</a>
+    </div>
+
+    <div class="card">
+      <div class="icono">🌡️</div>
+      <h2>Condiciones</h2>
+      <p>Monitorea la humedad y temperatura de las parcelas.</p>
+      <a href="condiciones.php" class="btn">Entrar</a>
+    </div>
+
+  </main>
+
 </body>
 </html>

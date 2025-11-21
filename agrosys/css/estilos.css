@@ -1,0 +1,497 @@
+/* AGROSYS NEO UI - estilos finales */
+
+/* Reset y base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* === LOGIN BACKGROUND SOLO PARA EL LOGIN === */
+body.login-container {
+  font-family: 'Outfit', sans-serif;
+  color: #f0fff0;
+  background: linear-gradient(140deg, #0f0f0f, #1a1a1a, #0d2e0d);
+  background-size: 300% 300%;
+  animation: gradiente 12s ease-in-out infinite;
+  min-height: 100vh;
+}
+
+
+/* Animación de fondo */
+@keyframes gradiente {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* === LOGIN === */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  border-radius: 20px;
+  padding: 40px 32px;
+  width: 95%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+}
+
+.login-card h1 {
+  font-size: 1.8rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.login-card h1 span {
+  color: #78ff8e;
+}
+
+.login-card p {
+  font-size: 0.95rem;
+  color: #d8ffd8;
+  margin-bottom: 20px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+}
+
+.login-card input::placeholder {
+  color: #e5fbe5;
+}
+
+.btn {
+  background: linear-gradient(90deg, #28a745, #2eb872);
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.25s ease, background 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #1f8d3f, #28a745);
+}
+
+/* === INDEX / DASHBOARD (Opción B) === */
+
+body {
+  background: radial-gradient(circle at top, #1b1b1b, #0e0e0e 70%);
+  color: #fff;
+}
+
+/* Barra superior */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 28px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #9ef0ae;
+}
+
+.logo span {
+  color: #78ff8e;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-logout {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.25s ease;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+/* === TOPBAR (Header) === */
+.topbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 40px;
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #9ef0ae;
+  letter-spacing: 1px;
+}
+
+.logo span {
+  color: #78ff8e;
+}
+
+.user-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user-name {
+  font-size: 1rem;
+  color: #e6ffe9;
+}
+
+.btn-logout {
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #fff;
+  text-decoration: none;
+  transition: 0.25s;
+}
+
+.btn-logout:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* Grid del menú */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 30px;
+  padding: 40px;
+}
+
+/* Tarjetas */
+.card {
+  background: rgba(40, 40, 40, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 20px;
+  padding: 28px 18px;
+  text-align: center;
+  color: #e6ffe9;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(12px);
+  transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+}
+
+.card .icono {
+  font-size: 2.4rem;
+  margin-bottom: 14px;
+  color: #78ff8e;
+}
+
+.card h2 {
+  color: #9ef0ae;
+  margin-bottom: 8px;
+  font-size: 1.3rem;
+}
+
+.card p {
+  font-size: 0.92rem;
+  opacity: 0.9;
+  margin-bottom: 16px;
+}
+
+.btn {
+  background: linear-gradient(90deg, #1b8e42, #2eb872);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.25s ease, background 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  background: linear-gradient(90deg, #167839, #1faa5b);
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .topbar {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .menu-grid {
+    padding: 20px;
+  }
+}
+/* === TABLAS CRUD AGROSYS NEO === */
+
+.contenedor {
+  padding: 40px;
+  max-width: 1100px;
+  margin: 40px auto;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.contenedor h1 {
+  color: #9ef0ae;
+  text-align: center;
+  margin-bottom: 25px;
+  font-size: 1.9rem;
+}
+
+/* Tabla */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 25px;
+  background: rgba(30, 30, 30, 0.55);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+table th {
+  background: rgba(120, 255, 142, 0.12);
+  color: #78ff8e;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+table td {
+  padding: 14px;
+  color: #eaffea;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+table tr:hover {
+  background: rgba(255, 255, 255, 0.08);
+  transition: 0.2s ease;
+}
+
+/* Botones dentro de las tablas */
+.btn.editar {
+  background: linear-gradient(90deg, #2076ff, #4ba3ff);
+}
+
+.btn.eliminar {
+  background: linear-gradient(90deg, #d63b3b, #ff5151);
+}
+
+.btn.guardar {
+  background: linear-gradient(90deg, #28a745, #2eb872);
+}
+
+.btn.cancelar {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.btn.editar:hover {
+  background: linear-gradient(90deg, #1c63d4, #3f8fe0);
+}
+
+.btn.eliminar:hover {
+  background: linear-gradient(90deg, #b13030, #e04646);
+}
+
+.btn.guardar:hover {
+  background: linear-gradient(90deg, #1f8d3f, #28a745);
+}
+
+.btn.cancelar:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Botón de agregar */
+.contenedor .btn {
+  margin-top: 10px;
+  display: inline-block;
+}
+/* === FORMULARIOS CRUD AGROSYS NEO === */
+
+.form-box {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 35px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  max-width: 600px;
+  margin: 40px auto;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+
+.form-box h2 {
+  color: #9ef0ae;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.form-box label {
+  display: block;
+  margin-bottom: 6px;
+  color: #d8ffd8;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form-box input,
+.form-box select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  border: none;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  outline: none;
+  font-size: 1rem;
+}
+
+.form-box input::placeholder {
+  color: #e5fbe5;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+}
+/* === Estilos para formularios CRUD (solo afectan .formulario) === */
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.formulario label {
+    font-weight: bold;
+}
+
+.formulario input,
+.formulario select,
+.formulario textarea {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+}
+
+
+.btn {
+    display: inline-block;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fff;
+}
+
+.btn.guardar {
+    background-color: #28a745;
+}
+
+.btn.cancelar {
+    background-color: #dc3545;
+}
+
+.alert.error {
+    background: #ffcccc;
+    padding: 10px;
+    border-left: 4px solid #c00;
+    margin-bottom: 12px;
+    border-radius: 4px;
+}
+/* === selects oscuros === */
+.form-box select option {
+    background: rgba(20, 20, 20, 0.95);
+    color: #e8ffe8;
+}
+/* === revisamos esto === */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    height: 45px; /* Ajusta a tu gusto */
+    width: auto;
+}
+
+.logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.logo-login {
+    width: 110px;
+    height: auto;
+    display: block;
+    margin: 0 auto 10px auto;
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 22px;
+    color: #b6ffc8;
+}
+
+.logo-header {
+    width: 60px;   /* Ajusta aquí si lo quieres más grande */
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 0 4px rgba(0,0,0,0.5));
+}
+.logo span {
+    font-size: 40px;   /* ← Ajusta este valor a tu gusto */
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #3ec660;
+}
+

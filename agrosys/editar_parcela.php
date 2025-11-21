@@ -1,52 +1,54 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-if(isset($_GET['id'])){
-    $id = $_GET['id'];
-    $sql = "SELECT * FROM Parcela WHERE id_parcela = $id";
-    $resultado = $conexion->query($sql);
-    $parcela = $resultado->fetch_assoc();
+$parcela = null;
+if(isset($_GET['id']) && is_numeric($_GET['id'])){
+    $id = (int)$_GET['id'];
+    $stmt = $conexion->prepare("SELECT id_parcela, nombre, ubicacion, extension, tipo_suelo FROM Parcela WHERE id_parcela = ?");
+    $stmt->bind_param("i",$id);
+    $stmt->execute();
+    $res = $stmt->get_result();
+    $parcela = $res->fetch_assoc();
+    $stmt->close();
 }
 
-if(isset($_POST['actualizar'])){
-    $id = $_POST['id'];
-    $nombre = $_POST['nombre'];
-    $ubicacion = $_POST['ubicación'];
-    $extension = $_POST['extension'];
-    $tipo_suelo = $_POST['tipo_suelo'];
-
-    $sql = "UPDATE Parcela SET 
-                nombre='$nombre', 
-                ubicación='$ubicacion', 
-                extensión='$extension', 
-                tipo_suelo='$tipo_suelo' 
-            WHERE id_parcela=$id";
-
-    if($conexion->query($sql) === TRUE){
-        header("Location: parcelas.php");
-    } else {
-        echo "Error: " . $conexion->error;
+$error = "";
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    $id = (int)$_POST['id'];
+    $nombre = trim($_POST['nombre']);
+    $ubicacion = trim($_POST['ubicacion']);
+    $extension = trim($_POST['extension']);
+    $tipo_suelo = trim($_POST['tipo_suelo']);
+    if($nombre===''||$ubicacion===''||$extension===''||$tipo_suelo===''){ $error="Todos los campos obligatorios."; }
+    else {
+        $stmt = $conexion->prepare("UPDATE Parcela SET nombre=?, ubicacion=?, extension=?, tipo_suelo=? WHERE id_parcela=?");
+        $stmt->bind_param("ssssi",$nombre,$ubicacion,$extension,$tipo_suelo,$id);
+        if($stmt->execute()){ header("Location: parcelas.php"); exit(); }
+        else { $error = "Error: ".$stmt->error; }
+        $stmt->close();
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Parcela</title>
-</head>
-<body>
+<div class="contenedor" style="max-width:700px;">
     <h1>Editar Parcela</h1>
-    <form method="POST">
-        <input type="hidden" name="id" value="<?php echo $parcela['id_parcela']; ?>">
-        Nombre: <input type="text" name="nombre" value="<?php echo $parcela['nombre']; ?>" required><br><br>
-        Ubicación: <input type="text" name="ubicación" value="<?php echo $parcela['ubicación']; ?>" required><br><br>
-        Extensión: <input type="text" name="extension" value="<?php echo $parcela['extensión']; ?>" required><br><br>
-        Tipo de Suelo: <input type="text" name="tipo_suelo" value="<?php echo $parcela['tipo_suelo']; ?>" required><br><br>
-        <input type="submit" name="actualizar" value="Actualizar Parcela">
+    <?php if($error): ?><div class="alert error"><?= htmlspecialchars($error); ?></div><?php endif; ?>
+    <?php if(!$parcela): ?>
+        <p>Parcela no encontrada.</p>
+        <a class="btn cancelar" href="parcelas.php">← Volver</a>
+    <?php else: ?>
+    <form method="POST" class="formulario">
+        <input type="hidden" name="id" value="<?= htmlspecialchars($parcela['id_parcela']); ?>">
+        <label>Nombre</label><input type="text" name="nombre" value="<?= htmlspecialchars($parcela['nombre']); ?>" required>
+        <label>Ubicación</label><input type="text" name="ubicacion" value="<?= htmlspecialchars($parcela['ubicacion']); ?>" required>
+        <label>Extensión</label><input type="text" name="extension" value="<?= htmlspecialchars($parcela['extension']); ?>" required>
+        <label>Tipo de Suelo</label><input type="text" name="tipo_suelo" value="<?= htmlspecialchars($parcela['tipo_suelo']); ?>" required>
+        <div style="margin-top:12px;">
+            <button class="btn guardar" type="submit">Actualizar</button>
+            <a class="btn cancelar" href="parcelas.php">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="parcelas.php">Volver a Parcelas</a>
-</body>
-</html>
+    <?php endif; ?>
+</div>
+</main></body></html>

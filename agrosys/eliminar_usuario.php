@@ -1,13 +1,13 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
 
-if(isset($_GET['id'])){
-    $id = $_GET['id'];
-    $sql = "DELETE FROM Usuario WHERE id_usuario = $id";
-    if($conexion->query($sql) === TRUE){
-        header("Location: usuarios.php");
-    } else {
-        echo "Error al eliminar usuario: " . $conexion->error;
-    }
+if(isset($_GET['id']) && is_numeric($_GET['id'])){
+    $id = (int)$_GET['id'];
+    $stmt = $conexion->prepare("DELETE FROM Usuario WHERE id_usuario = ?");
+    $stmt->bind_param("i",$id);
+    $stmt->execute();
+    $stmt->close();
 }
-?>
+header("Location: usuarios.php");
+exit();

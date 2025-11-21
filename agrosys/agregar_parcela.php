@@ -1,39 +1,41 @@
 <?php
-include "conexion.php";
+require_once "includes/conexion.php";
+require_once "includes/auth.php";
+include "includes/header.php";
 
-if(isset($_POST['guardar'])){
-    $nombre = $_POST['nombre'];
-    $ubicacion = $_POST['ubicación'];
-    $extension = $_POST['extension'];
-    $tipo_suelo = $_POST['tipo_suelo'];
+$error = "";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['nombre'] ?? '');
+    $ubicacion = trim($_POST['ubicacion'] ?? '');
+    $extension = trim($_POST['extension'] ?? '');
+    $tipo_suelo = trim($_POST['tipo_suelo'] ?? '');
 
-    $sql = "INSERT INTO Parcela (nombre, ubicación, extensión, tipo_suelo) 
-            VALUES ('$nombre', '$ubicacion', '$extension', '$tipo_suelo')";
-
-    if($conexion->query($sql) === TRUE){
-        header("Location: parcelas.php");
+    if ($nombre===''|| $ubicacion===''|| $extension===''|| $tipo_suelo==='') {
+        $error = "Todos los campos son obligatorios.";
     } else {
-        echo "Error: " . $sql . "<br>" . $conexion->error;
+        $stmt = $conexion->prepare("INSERT INTO Parcela (nombre, ubicacion, extension, tipo_suelo) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $nombre, $ubicacion, $extension, $tipo_suelo);
+        if ($stmt->execute()) {
+            header("Location: parcelas.php"); exit();
+        } else {
+            $error = "Error: " . $stmt->error;
+        }
+        $stmt->close();
     }
 }
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Agregar Parcela</title>
-</head>
-<body>
+<div class="contenedor" style="max-width:700px;">
     <h1>Agregar Parcela</h1>
-    <form method="POST">
-        Nombre: <input type="text" name="nombre" required><br><br>
-        Ubicación: <input type="text" name="ubicación" required><br><br>
-        Extensión: <input type="text" name="extension" required><br><br>
-        Tipo de Suelo: <input type="text" name="tipo_suelo" required><br><br>
-        <input type="submit" name="guardar" value="Guardar Parcela">
+    <?php if($error): ?><div class="alert error"><?= htmlspecialchars($error); ?></div><?php endif; ?>
+    <form method="POST" class="formulario">
+        <label>Nombre</label><input type="text" name="nombre" required>
+        <label>Ubicación</label><input type="text" name="ubicacion" required>
+        <label>Extensión</label><input type="text" name="extension" required>
+        <label>Tipo de Suelo</label><input type="text" name="tipo_suelo" required>
+        <div style="margin-top:12px;">
+            <button class="btn guardar" type="submit">Guardar</button>
+            <a class="btn cancelar" href="parcelas.php">Cancelar</a>
+        </div>
     </form>
-    <br>
-    <a href="parcelas.php">Volver a Parcelas</a>
-</body>
-</html>
+</div>
+</main></body></html>
