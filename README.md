@@ -1,11 +1,10 @@
-Convenciones y nombres:
+Repositorio oficial del sistema Agrosys.
 
-main — versión estable / producción.
+## Control de versiones
+Para el desarrollo del proyecto se utilizó un flujo de trabajo simple basado en ramas:
 
-develop — rama de integración; aquí se integran las features.
+- main: versión estable del proyecto.
+- develop: rama utilizada para preparar cambios antes de integrarlos.
+- v1, v2, v3: ramas correspondientes a cada versión desarrollada (interfaz, base de datos y mejoras generales).
 
-feature/<nombre> — ramas para nuevas funcionalidades (ej.: feature/registro-cultivos).
-
-hotfix/<nombre> — correcciones urgentes de producción.
-
-release/vX.Y — etiquetas/lanzamientos.
+No se utiliza GitFlow avanzado (hotfix, release), solo un control básico de versiones con ramas.
